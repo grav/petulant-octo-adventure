@@ -9,7 +9,7 @@
       context = window.AudioContext && (new window.AudioContext());
     }
     userContext = context;
-    userInstance = this;
+	userInstance = this;
   },
       version = "0.1",
       Super = Object.create(null, {
@@ -149,7 +149,32 @@
       }
     }
   });
-
+  
+  PUA.prototype.SoundCloud = function(url){
+	  PUA.prototype.ExternalSound.call(this);
+	  this.track_url = url;
+  };
+  
+  PUA.prototype.SoundCloud.prototype = Object.create(PUA.prototype.ExternalSound.prototype, {
+	  track_url: {
+		  enumarable: true,
+		  get: function(){
+			  return this._track_url
+		  },
+		  set: function(value){
+			  var self = this;
+			  this._track_url = value;
+			  console.log('Setting track url to ',value);
+			  this.ready = false;
+			  $.get('http://api.soundcloud.com/resolve.json?url='+value+'&client_id=a2f0745a136883f33e1b299b90381703', function (result) {
+			    console.log('Result', result);
+			    self.audio.src = result.stream_url+'?client_id=a2f0745a136883f33e1b299b90381703';
+				self.audio.load();
+			  });
+		  }
+	  }
+  });
+  
   PUA.toString = PUA.prototype.toString = function () {
     return "You are running pertulant octo adventure version " + version;
   };

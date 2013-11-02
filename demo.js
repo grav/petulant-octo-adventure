@@ -4,14 +4,7 @@ var context = new AudioContext();
 var tuna = new Tuna(context);
 var pet = new PUA(context);
 
-var track_url = 'https://soundcloud.com/lordemusic/royals';
-
-var e = new pet.ExternalSound();
-
-$.get('http://api.soundcloud.com/resolve.json?url='+track_url+'&client_id=a2f0745a136883f33e1b299b90381703', function (result) {
-  console.log('Result', result);
-  e.src = result.stream_url+'?client_id=a2f0745a136883f33e1b299b90381703';
-});
+var sc = new pet.SoundCloud('https://soundcloud.com/lordemusic/royals');
 
 var chorus = new tuna.Chorus({
                  rate: 10.5,
@@ -20,7 +13,7 @@ var chorus = new tuna.Chorus({
                  bypass: 0
              });
 
-e.connect(chorus.input);
+sc.connect(chorus.input);
 chorus.connect(context.destination);
 
 var wave = new pet.Waveform();
