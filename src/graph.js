@@ -142,19 +142,23 @@
       value: function(event) {
         var self = this,
             g = self.g,
-          nodeId = event.self._nodeId;
+          nodeId = event.self._nodeId,
+            sub = event.sub || 'self';
         if(nodeId && g.hasNode(nodeId)) {
           if(event.type === "connected") {
             var target = event.target._nodeId,
                 visual = typeof(event.visual) == "undefined" ? true : event.visual;
             if(target && g.hasNode(target)) {
-              g.addEdge(null, nodeId, target, {visual:visual});
+              g.addEdge(null, nodeId, target, {sub:sub, visual:visual});
               self._layout = null;
             }
           } else if(event.type === "disconnected") {
             var out = g.outEdges(nodeId);
-            for(var i=0, l=out.length;i<l;i++)
-              g.delEdge(out[i]);
+            for(var i=0, l=out.length;i<l;i++) {
+              var e = g.edge(out[i]);
+              if(e.sub === sub)
+                g.delEdge(out[i]);
+            }
             self._layout = null;
           }
         }

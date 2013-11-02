@@ -264,12 +264,21 @@
 		  }
 	  },
 	  connect: {
+      enumerable: true,
 		  value: function(node){
-        this.owner.eventHandler({type:'connecting', self:this.owner, target:node, visual:false});
+        this.owner.eventHandler({type:'connecting', self:this.owner, sub:'comments', target:node, visual:false});
 				  this.speakers.push(node);
-        this.owner.eventHandler({type:'connected', self:this.owner, target:node, visual:false});
+        this.owner.eventHandler({type:'connected', self:this.owner, sub:'comments', target:node, visual:false});
 		  }
 	  },
+    disconnect: {
+      enumerable: true,
+      value: function() {
+        this.owner.eventHandler({type:'disconnecting', self:this.owner, sub:'comments'});
+        this.speakers = [];
+        this.owner.eventHandler({type:'disconnected', self:this.owner, sub:'comments'});
+      }
+    },
       defaults: {
   }});
 
