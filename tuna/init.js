@@ -17,7 +17,7 @@ function bufferSound(event) {
 	var source = context.createBufferSource();
 	source.buffer = context.createBuffer(request.response, false);
 	mySource = source;
-	
+	safeAdd(g,mySource);
 }
 
 function safeAdd(g,n){
@@ -26,7 +26,9 @@ function safeAdd(g,n){
 		lastId += 1;
 		n._nodeId = lastId;
 		g.addNode(n._nodeId,{label: getName(n)})
+		console.log("no id for " + getName(n) + ", giving it "+ n._nodeId);
 	}
+	renderGraph();
 	
 }
 
@@ -46,7 +48,10 @@ function connect(n,m){
 	safeAdd(g,n);
 	safeAdd(g,m);
 	// TODO: only supports one outgoing edge
-	n._edgeId = g.addEdge(null,n._nodeId,m._nodeId)
+	if(n._edgeIds===undefined){
+		n._edgeIds = [];
+	}
+	n._edgeIds.push(g.addEdge(null,n._nodeId,m._nodeId))
 	
 	renderGraph();
 }
@@ -56,7 +61,11 @@ function disconnect(n){
 	console.log("disconnected output " + output + " of " + getName(n));
 	n.disconnect(output);
 	// TODO: only supports one outgoing edge
-	g.delEdge(n._edgeId);
+	if(n._edgeIds!==undefined){
+		for(var i=0;i<n._edgeIds.length;i++){
+			g.delEdge(n._edgeIds[i]);
+		}
+	}
 
 	renderGraph();
 }
@@ -112,11 +121,10 @@ function init(){
 	             });
 			 
 	// load resource
- 
-	for(n in [phaser,mySource,context.destination,delay]){
-		safeAdd(g,n);
+	var nodes = [phaser,delay,gain,context.destination];
+	for(var i=0; i < nodes.length; i++){
+		safeAdd(g,nodes[i]);
 	}
-	renderGraph();
  
 	request = new XMLHttpRequest();
 	request.open('GET', 'misty.wav', true);
