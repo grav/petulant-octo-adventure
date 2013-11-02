@@ -205,7 +205,7 @@
 			  // remove excessive exclamation points			  
 			  text = text.replace(/!!+/g,"!")
 			  this.meSpeak.speak(text)
-			  document.getElementById("comment").innerHTML=text;
+			  document.getElementById("usercomment").innerHTML=text;
 	  	}
 	}
 
@@ -229,7 +229,8 @@
 				  for(var i=0; i<self.speakers.length; i++){
 					  self.speakers[i].speak(comment.body);
 				  }
-                  var img = document.getElementById("userpic");
+
+                var img = document.getElementById("userpic");
           		  img.src = comment.user.avatar_url;
 
 				  // throttle speech
