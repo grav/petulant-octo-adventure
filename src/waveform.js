@@ -14,7 +14,7 @@
   },
       version = "0.1",
         noop = function() {},
-      Super = Object.create(null, {
+      Super = Object.create({}, {
           visual: {
             get: function() {
               if(!this._visual && userInstance.defaultVisual)
@@ -36,12 +36,14 @@
           }
         },
         reconnect: {
+          enumerable: true,
           value: function(target) {
             this.disconnect();
             this.connect(target);
           }
         },
         connect: {
+          enumerable: true,
           value: function (target) {
             var input = target;
             if(typeof(target.input) !== "undefined")
@@ -54,6 +56,7 @@
           }
         },
         disconnect: {
+          enumerable: true,
           value: function (target) {
             this.eventHandler({type:'disconnecting', self:this, target:target});
             this.output.disconnect(target);
@@ -176,11 +179,13 @@
       }
     },
     play: {
+      enumerable: true,
       value: function() {
         this.output.mediaElement.play();
       }
     },
     pause: {
+      enumerable: true,
       value: function() {
         this.output.mediaElement.pause();
       }
@@ -207,6 +212,7 @@
         value: "Speaker"
       },
 	  speak: {
+      enumerable: true,
 		  value: function(text){
 			  // remove excessive exclamation points
 			  text = text.replace(/!!+/g,"!")
@@ -244,7 +250,7 @@
 				  setTimeout(function(){self.throttle=false;},3000);
 			  }
   			  self.p+=1;
-			  if(self.p>=self._comments.length) self.p = 0;	
+			  if(self.p>=self._comments.length) self.p = 0;
 
 		  }
 	  });
