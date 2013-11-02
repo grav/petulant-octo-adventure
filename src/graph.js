@@ -217,6 +217,8 @@
           ctx.strokeRect(v.x-v.width/2, v.y-v.height/2, v.width, v.height);
           ctx.fillText(g.node(u).label, v.x, v.y);
         });
+		var oldStroke = ctx.strokeStyle;
+		ctx.strokeStyle="#0033DD";
         layout.eachEdge(function(e, sId, dId, v){
           var s = g.node(sId),
               visual = s.value.visual;
@@ -225,7 +227,8 @@
           } else {
             v.path.draw(ctx);
           }
-        });
+        })
+		ctx.strokeStyle=oldStroke;
       }
     },
     make: {
