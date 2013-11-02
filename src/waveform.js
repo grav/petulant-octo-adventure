@@ -202,16 +202,10 @@
       },
 	  speak: {
 		  value: function(text){
-			  if(!this.isSpeaking){
-				  this.isSpeaking = true;
-				  // remove excessive exclamation points
-				  text = text.replace(/!!+/g,"!")
-				  this.meSpeak.speak(text)
-				  document.getElementById("comment").innerHTML=text;
-				  // throttle speech
-				  var self = this;
-				  setTimeout(function(){self.isSpeaking=false;},3000);
-			  }
+			  // remove excessive exclamation points			  
+			  text = text.replace(/!!+/g,"!")
+			  this.meSpeak.speak(text)
+			  document.getElementById("comment").innerHTML=text;
 	  	}
 	}
 
@@ -225,16 +219,23 @@
   CommentsEmitter = function(audio){
 	  this.p = 0;
 	  this.speakers = [];
+	  this.throttle = false;
 	  var self = this;
 	  audio.addEventListener('timeupdate', function(){
 		  var comment = self._comments[self.p];
-		  if(comment.timestamp < audio.currentTime * 1000 ){
-			  for(var i=0; i<self.speakers.length; i++){
-				  self.speakers[i].speak(comment.body);
-			  }
+		  if(comment.timestamp !== undefined && comment.timestamp < audio.currentTime * 1000 ){
+			  if(!self.throttle){
+				  self.throttle = true;
+				  for(var i=0; i<self.speakers.length; i++){
+					  self.speakers[i].speak(comment.body);
+				  }
                   var img = document.getElementById("userpic");
-          img.src = comment.user.avatar_url;
-          console.log(img); 
+          		  img.src = comment.user.avatar_url;
+
+				  // throttle speech
+				  // var self = this;
+				  setTimeout(function(){self.throttle=false;},3000);
+			  }
   			  self.p+=1;
 
 		  }
