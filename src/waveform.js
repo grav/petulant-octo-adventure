@@ -222,7 +222,8 @@
   */
 
   // todo - maybe move out of module?
-  CommentsEmitter = function(audio){
+  CommentsEmitter = function(owner, audio){
+    this.owner = owner;
 	  this.p = 0;
 	  this.speakers = [];
 	  var self = this;
@@ -234,7 +235,6 @@
 			  }
                   var img = document.getElementById("userpic");
           img.src = comment.user.avatar_url;
-          console.log(img); 
   			  self.p+=1;
 
 		  }
@@ -256,7 +256,9 @@
 	  },
 	  connect: {
 		  value: function(node){
+        this.owner.eventHandler({type:'connecting', self:this.owner, target:node, visual:false});
 				  this.speakers.push(node);
+        this.owner.eventHandler({type:'connected', self:this.owner, target:node, visual:false});
 		  }
 	  },
       defaults: {
@@ -267,7 +269,7 @@
   PUA.prototype.SoundCloud = function(url){
 	  PUA.prototype.ExternalSound.call(this);
 	  this.track_url = url;
-	  this.commentsEmitter = new CommentsEmitter(this.audio);
+	  this.commentsEmitter = new CommentsEmitter(this, this.audio);
 
   };
 
