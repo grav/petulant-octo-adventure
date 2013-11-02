@@ -39,10 +39,10 @@ function renderGraph(){
 }
 
 function connect(n,m){
-	if(m.input===undefined){
-		n.connect(m);			
-	} else {
+	if(m.input!==undefined){
 		n.connect(m.input);
+	} else if(m.destination!==undefined){
+		n.connect(m.destination)
 	}
 	console.log("connected " + getName(n) + " to " + getName(m));
 	safeAdd(g,n);
@@ -97,6 +97,11 @@ function init(){
  
 	context = new webkitAudioContext();
 	gain = context.createGain();
+
+	// speech
+	meSpeak.loadConfig("mespeak_config.json");
+	meSpeak.loadVoice('voices/en/en-us.json');
+	
 
 	// setup tuna
 	tuna = new Tuna(context);
