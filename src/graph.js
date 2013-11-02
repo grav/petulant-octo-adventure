@@ -10,6 +10,11 @@
         return this.lastId++;
       }
     },
+    showVisuals: {
+      enumerable: true,
+      writable:true,
+      value:false
+    },
     visualHeight: {
       enumerable: true,
       writable:true,
@@ -225,15 +230,16 @@
     },
     render: {
       value: function(){
-        var ctx = this._ctx,
-            g = this.g,
-            layout = this.layout,
-            fontSize = this.fontSize,
-            visualHeight = this.visualHeight,
+        var self = this,
+            ctx = self._ctx,
+            g = self.g,
+            layout = self.layout,
+            fontSize = self.fontSize,
+            visualHeight = self.visualHeight,
             t = ctx.canvas.width/2-layout.bounds.width/2;
         ctx.translate(t, 0);
         ctx.textAlign = 'center';
-        ctx.font = this.font;
+        ctx.font = self.font;
         layout.eachNode(function(u, v) {
           ctx.strokeRect(v.x-v.width/2, v.y-v.height/2, v.width, v.height);
           ctx.fillText(g.node(u).label, v.x, v.y+fontSize/2.6 );
@@ -244,7 +250,7 @@
           var s = g.node(sId),
               ed = g.edge(e),
               visual = s.value.visual;
-          if(visual && ed.visual){
+          if(self.showVisuals && visual && ed.visual){
             visual.draw(ctx, v.path, visualHeight);
           } else {
             v.path.draw(ctx);
