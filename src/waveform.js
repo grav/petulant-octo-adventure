@@ -150,22 +150,47 @@
     }
   });
   
+  
+  /*
+  Speaker (meSpeak wrapper)
+  */
+  
+  PUA.prototype.Speaker = function(meSpeak){
+	// Super.call(this);
+	this.meSpeak = meSpeak;
+	meSpeak.loadConfig("tuna/mespeak_config.json");
+	meSpeak.loadVoice('tuna/voices/en/en-us.json');
+	meSpeak.setAudioContext(userContext);
+	this.output = meSpeak.getMasterGain();
+  };
+  
+  PUA.prototype.Speaker.prototype = Object.create(Super, {
+      name: {
+        value: "Speaker"
+      },
+	  speak: {
+		  value: function(text){
+			  this.meSpeak.speak(text)
+	  	}
+	}
+  	
+  });
+  
   /* 
   SoundCloud
   */
   
-  
-  CommentsEmitter = function(comments,audio){
-	  comments.sort(function(a,b){			
-		return a["timestamp"] - b["timestamp"];
-	  });
-	  this.comments = comments;
+  // todo - maybe move out of module?
+  CommentsEmitter = function(audio){
 	  this.p = 0;
 	  var self = this;
 	  audio.addEventListener('timeupdate', function(){
-		  var comment = self.comments[self.p];
+		  var comment = self._comments[self.p];
 		  if(comment.timestamp < audio.currentTime * 1000 ){
   			  console.log(comment.body);
+			  if(self.speaker){
+				  self.speaker.speak(comment.body);			  	
+			  }
   			  self.p+=1;
 		  }
 	  });
@@ -175,6 +200,22 @@
       name: {
         value: "CommentsEmitter"
       },
+	  comments: {
+		  set: function(comments){
+			  comments.sort(function(a,b){			
+				return a["timestamp"] - b["timestamp"];
+			  });
+			  console.log("got "+ comments.length + " comments!");
+			  this._comments = comments;
+		  }
+	  },
+	  connect: {
+		  value: function(node){
+			  // if(node instanceof PUA.Speaker){
+				  this.speaker = node;
+			  // }
+		  }
+	  },
       defaults: {	
   }});
   
@@ -183,6 +224,7 @@
   PUA.prototype.SoundCloud = function(url){
 	  PUA.prototype.ExternalSound.call(this);
 	  this.track_url = url;
+	  this.commentsEmitter = new CommentsEmitter(this.audio);
 	  
   };
   
@@ -207,7 +249,7 @@
 			    self.audio.src = result.stream_url+"?true&"+client_id;
 				self.audio.load();
 				$.get(result.uri+'/comments.json?true'+client_id, function(comments){
-					self.comments = new CommentsEmitter(comments,self.audio);
+					self.commentsEmitter.comments = comments;
 				});
 			  });
 		  }

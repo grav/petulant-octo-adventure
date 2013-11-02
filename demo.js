@@ -6,6 +6,10 @@ var pet = new PUA(context);
 
 var sc = new pet.SoundCloud('https://soundcloud.com/lordemusic/royals');
 
+var speaker = new pet.Speaker(meSpeak);
+speaker.connect(context.destination);
+sc.commentsEmitter.connect(speaker);
+
 var chorus = new tuna.Chorus({
                  rate: 10.5,
                  feedback: 0.2,
