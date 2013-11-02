@@ -217,12 +217,13 @@
         var ctx = this._ctx,
             g = this.g,
             layout = this.layout,
+            fontSize = this.fontSize,
             visualHeight = this.visualHeight;
         ctx.textAlign = 'center';
         ctx.font = this.font;
         layout.eachNode(function(u, v) {
           ctx.strokeRect(v.x-v.width/2, v.y-v.height/2, v.width, v.height);
-          ctx.fillText(g.node(u).label, v.x, v.y);
+          ctx.fillText(g.node(u).label, v.x, v.y+fontSize/2.6 );
         });
 		var oldStroke = ctx.strokeStyle;
 		ctx.strokeStyle="#0033DD";
