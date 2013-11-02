@@ -10,14 +10,14 @@ var g = new Graph(ctx);
 g.make('OUT', context.destination);
 
 var pet = new PUA(context);
-var tuna = new Tuna(context, pet);
+var tuna = new Tuna(context);
+tuna.defaultVisual = pet.Waveform;
 tuna.eventHandler = function(event) { g.swallow(event) };
 pet.eventHandler = function(event) { g.swallow(event) };
 
 g.make('sc', new pet.SoundCloud('https://soundcloud.com/lordemusic/royals'));
 
 g.make('speaker', new pet.Speaker(meSpeak));
-g.speaker.visual = new pet.Waveform();
 g.speaker.connect(context.destination);
 g.sc.commentsEmitter.connect(g.speaker);
 
@@ -27,7 +27,6 @@ g.make('chorus', new tuna.Chorus({
                  delay: 0.0045,
                  bypass: 0
              }));
-g.chorus.visual = new pet.Waveform();
 
 g.sc.connect(g.chorus);
 g.chorus.connect(context.destination);

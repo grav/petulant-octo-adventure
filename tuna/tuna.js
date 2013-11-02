@@ -16,7 +16,7 @@
 */
 //Originally written by Alessandro Saccoia, Chris Coniglio and Oskar Eriksson
 (function (window) {
-    var userContext, userInstance, Tuna = function (context, pet) {
+    var userContext, userInstance, Tuna = function (context) {
             if (! window.AudioContext) {
 		window.AudioContext = window.webkitAudioContext;
    	    }
@@ -27,7 +27,6 @@
             }
             userContext = context;
             userInstance = this;
-            this.pet = pet;
         },
         noop = function() {},
         version = "0.1",
@@ -37,6 +36,18 @@
             param.value = val;
         },
         Super = Object.create(null, {
+          visual: {
+            get: function() {
+              if(!this._visual && userInstance.defaultVisual)
+                this._visual = new userInstance.defaultVisual;
+              return this._visual;
+            },
+            set: function(value) {
+              if(this._visual && this._visual.connected)
+                throw "Visual already initialized and connected";
+              this._visual = value;
+            }
+          },
           eventHandler: {
                 get: function () {
                     return userInstance.eventHandler || this._eventHandler || noop;
