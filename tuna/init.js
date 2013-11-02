@@ -26,7 +26,6 @@ function safeAdd(g,n){
 		lastId += 1;
 		n._nodeId = lastId;
 		g.addNode(n._nodeId,{label: getName(n)})
-		console.log("no id for " + getName(n) + ", giving it "+ n._nodeId);
 	}
 	renderGraph();
 	
@@ -72,6 +71,24 @@ function disconnect(n){
 	renderGraph();
 }
 
+function trigger(n,speaker,comments,p){
+	if(p==0){
+		n.start(0);		
+	}
+	if (p>=comments.length) return;
+
+	var prev = p==0?0:comments[p-1]["timestamp"];
+
+	var time = comments[p]["timestamp"]-prev;
+	var text = comments[p]["body"];
+	console.log("saying '" +text + "' in "+ time + " ms");
+	window.setTimeout(function(){
+		document.getElementById("comment").innerHTML = text;
+		speaker.speak(text);
+		trigger(n,speaker,comments,p+1);
+	},time);
+}
+
 // --- GLOBAL VARS (*gulp*)
 
 var renderer = 0; // graph renderer
@@ -86,15 +103,32 @@ var delay = 0;
 var phaser = 0;
 var mySource = 0;
 
-var speak = 0;
+var speaker = 0;
 
 var request = 0;
 
 var lastId = -1;
 
+var comments = 0;
+
+var client_id = "?client_id=a2f0745a136883f33e1b299b90381703";
+
 function init(){
 	
-	console.log("init()")
+	console.log("init()");
+	
+	var track_url = "https://api.soundcloud.com/tracks/113201887";
+	var req = new XMLHttpRequest();
+	var url = track_url+"/comments.json"+client_id;
+	req.open("GET",url,true);
+	req.responseType='text';
+	req.addEventListener('load',function(e){
+		comments=JSON.parse(req.responseText);
+		comments.sort(function(a,b){			
+			return a["timestamp"] - b["timestamp"];
+		});
+	},false);
+	req.send();
 	
 	renderer = new dagreD3.Renderer();
 	g = new dagreD3.Digraph();
@@ -106,7 +140,7 @@ function init(){
 	
 	meSpeak.setAudioContext(context);
 
-	speak = meSpeak.getMasterGain();
+	speaker = meSpeak.getMasterGain();
 
 	// setup tuna
 	tuna = new Tuna(context);
@@ -131,13 +165,13 @@ function init(){
 	             });
 			 
 	// load resource
-	var nodes = [phaser,context.destination,speak];
+	var nodes = [phaser,context.destination,speaker];
 	for(var i=0; i < nodes.length; i++){
 		safeAdd(g,nodes[i]);
 	}
  
 	request = new XMLHttpRequest();
-	request.open('GET', 'misty.wav', true);
+	request.open('GET', track_url+"/stream"+client_id, true);
 	request.responseType = 'arraybuffer';
 	request.addEventListener('load', bufferSound, false);
 	request.send();
