@@ -1,0 +1,18 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+<script>
+var track_url = 'https://soundcloud.com/spinechillerpro/baby-cry-sample-wav'; 
+$.get('http://api.soundcloud.com/resolve.json?url='+track_url+'&client_id=a2f0745a136883f33e1b299b90381703', function (result) {
+  console.log(result);
+	var context = new webkitAudioContext(),
+    audio = new Audio();
+	url = result.stream_url+'?client_id=a2f0745a136883f33e1b299b90381703';
+ //url = 'http://api.soundcloud.com/tracks/6981096/stream' +
+ //         '?client_id=YOUR_CLIENT_ID';
+
+	audio.src = url;
+	source = context.createMediaElementSource(audio);
+	source.connect(context.destination);
+	source.mediaElement.play();
+});
+</script>
