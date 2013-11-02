@@ -40,3 +40,10 @@ g.make('phaser', new tuna.Phaser({
 //g.e.pause()
 
 g.start()
+
+function setup(){
+	g.soundCloud.connect(g.phaser);
+	g.soundCloud.commentsEmitter.connect(g.speech);
+	g.speech.connect(g.OUT);
+	g.phaser.connect(g.OUT);
+}
