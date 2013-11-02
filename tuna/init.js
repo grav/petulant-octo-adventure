@@ -84,7 +84,9 @@ var gain = 0;
 var tuna = 0; 
 var delay = 0;
 var phaser = 0;
-var mySource;
+var mySource = 0;
+
+var speak = 0;
 
 var request = 0;
 
@@ -98,26 +100,27 @@ function init(){
 	g = new dagreD3.Digraph();
  
 	context = new webkitAudioContext();
-	gain = context.createGain();
-
 	// speech
 	meSpeak.loadConfig("mespeak_config.json");
 	meSpeak.loadVoice('voices/en/en-us.json');
 	
+	meSpeak.setAudioContext(context);
+
+	speak = meSpeak.getMasterGain();
 
 	// setup tuna
 	tuna = new Tuna(context);
 
-	delay = new tuna.Delay({
-	                feedback: 0.45,    //0 to 1+
-	                delayTime: 150,    //how many milliseconds should the wet signal be delayed? 
-	                wetLevel: 0.7,    //0 to 1+
-	                dryLevel: 1,       //0 to 1+
-	                cutoff: 20,        //cutoff frequency of the built in highpass-filter. 20 to 22050
-	                bypass: 0
-	            });
-
-
+	// delay = new tuna.Delay({
+	//                 feedback: 0.45,    //0 to 1+
+	//                 delayTime: 150,    //how many milliseconds should the wet signal be delayed? 
+	//                 wetLevel: 0.7,    //0 to 1+
+	//                 dryLevel: 1,       //0 to 1+
+	//                 cutoff: 20,        //cutoff frequency of the built in highpass-filter. 20 to 22050
+	//                 bypass: 0
+	//             });
+	// 
+	// 
 	phaser = new tuna.Phaser({
 	                 rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
 	                 depth: 0.7,                    //0 to 1
@@ -128,7 +131,7 @@ function init(){
 	             });
 			 
 	// load resource
-	var nodes = [phaser,delay,gain,context.destination];
+	var nodes = [phaser,context.destination,speak];
 	for(var i=0; i < nodes.length; i++){
 		safeAdd(g,nodes[i]);
 	}
