@@ -16,7 +16,7 @@
 */
 //Originally written by Alessandro Saccoia, Chris Coniglio and Oskar Eriksson
 (function (window) {
-    var userContext, userInstance, Tuna = function (context) {
+    var userContext, userInstance, Tuna = function (context, pet) {
             if (! window.AudioContext) {
 		window.AudioContext = window.webkitAudioContext;
    	    }
@@ -27,6 +27,7 @@
             }
             userContext = context;
             userInstance = this;
+            this.pet = pet;
         },
         noop = function() {},
         version = "0.1",
@@ -81,6 +82,8 @@
                   this.callback({type:'connecting', self:this, target:target});
                   this.output.connect(input);
                   this.callback({type:'connected', self:this, target:target});
+                  if(this.visual && !this.visual.connected)
+                    this.output.connect(this.visual.input);
                 }
             },
             disconnect: {
@@ -88,6 +91,8 @@
                   this.callback({type:'disconnecting', self:this, target:target});
                   this.output.disconnect(target);
                   this.callback({type:'disconnected', self:this, target:target});
+                  if(this.visual)
+                    this.visual.connected = false;
                 }
             },
             connectInOrder: {
