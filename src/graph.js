@@ -130,7 +130,7 @@
     stop: {
       enumerable: true,
       value: function() {
-        clearTimeout(self._timer);
+        clearTimeout(this._timer);
       }
     },
     swallow: {
