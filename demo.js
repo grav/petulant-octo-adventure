@@ -11,8 +11,8 @@ g.make('OUT', context.destination);
 
 var pet = new PUA(context);
 var tuna = new Tuna(context, pet);
-tuna.callback = function(event) { g.swallow(event) };
-pet.callback = function(event) { g.swallow(event) };
+tuna.eventHandler = function(event) { g.swallow(event) };
+pet.eventHandler = function(event) { g.swallow(event) };
 
 g.make('sc', new pet.SoundCloud('https://soundcloud.com/lordemusic/royals'));
 

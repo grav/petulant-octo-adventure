@@ -14,12 +14,12 @@
       version = "0.1",
         noop = function() {},
       Super = Object.create(null, {
-        callback: {
+        eventHandler: {
           get: function () {
-            return userInstance.callback || this._callback || noop;
+            return userInstance.eventHandler || this._eventHandler || noop;
           },
           set: function (value) {
-            this._callback = value;
+            this._eventHandler = value;
           }
         },
         connect: {
@@ -27,18 +27,18 @@
             var input = target;
             if(typeof(target.input) !== "undefined")
               input = target.input;
-            this.callback({type:'connecting', self:this, target:target});
+            this.eventHandler({type:'connecting', self:this, target:target});
             this.output.connect(input);
-            this.callback({type:'connected', self:this, target:target});
+            this.eventHandler({type:'connected', self:this, target:target});
             if(this.visual && !this.visual.connected)
               this.output.connect(this.visual.input);
           }
         },
         disconnect: {
           value: function (target) {
-            this.callback({type:'disconnecting', self:this, target:target});
+            this.eventHandler({type:'disconnecting', self:this, target:target});
             this.output.disconnect(target);
-            this.callback({type:'disconnected', self:this, target:target});
+            this.eventHandler({type:'disconnected', self:this, target:target});
             if(this.visual)
               this.visual.connected = false;
           }
@@ -168,12 +168,12 @@
       }
     }
   });
-  
-  
+
+
   /*
   Speaker (meSpeak wrapper)
   */
-  
+
   PUA.prototype.Speaker = function(meSpeak){
 	// Super.call(this);
 	this.meSpeak = meSpeak;
@@ -182,7 +182,7 @@
 	meSpeak.setAudioContext(userContext);
 	this.output = meSpeak.getMasterGain();
   };
-  
+
   PUA.prototype.Speaker.prototype = Object.create(Super, {
       name: {
         value: "Speaker"
@@ -192,13 +192,13 @@
 			  this.meSpeak.speak(text)
 	  	}
 	}
-  	
+
   });
-  
-  /* 
+
+  /*
   SoundCloud
   */
-  
+
   // todo - maybe move out of module?
   CommentsEmitter = function(audio){
 	  this.p = 0;
@@ -207,20 +207,20 @@
 		  var comment = self._comments[self.p];
 		  if(comment.timestamp < audio.currentTime * 1000 ){
 			  if(self.speaker){
-				  self.speaker.speak(comment.body);			  	
+				  self.speaker.speak(comment.body);
 			  }
   			  self.p+=1;
 		  }
 	  });
   };
-  
+
   CommentsEmitter.prototype = Object.create(Super, {
       name: {
         value: "CommentsEmitter"
       },
 	  comments: {
 		  set: function(comments){
-			  comments.sort(function(a,b){			
+			  comments.sort(function(a,b){
 				return a["timestamp"] - b["timestamp"];
 			  });
 			  console.log("got "+ comments.length + " comments!");
@@ -234,20 +234,20 @@
 			  // }
 		  }
 	  },
-      defaults: {	
+      defaults: {
   }});
-  
-  
-  
+
+
+
   PUA.prototype.SoundCloud = function(url){
 	  PUA.prototype.ExternalSound.call(this);
 	  this.track_url = url;
 	  this.commentsEmitter = new CommentsEmitter(this.audio);
-	  
+
   };
-  
+
   var client_id = '&client_id=a2f0745a136883f33e1b299b90381703';
-  
+
   PUA.prototype.SoundCloud.prototype = Object.create(PUA.prototype.ExternalSound.prototype, {
       name: {
         value: "SoundCloud"
@@ -272,7 +272,7 @@
 		  }
 	  }
   });
-  
+
   PUA.toString = PUA.prototype.toString = function () {
     return "You are running pertulant octo adventure version " + version;
   };
