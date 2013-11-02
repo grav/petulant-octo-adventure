@@ -223,12 +223,13 @@
   // todo - maybe move out of module?
   CommentsEmitter = function(audio){
 	  this.p = 0;
+	  this.speakers = [];
 	  var self = this;
 	  audio.addEventListener('timeupdate', function(){
 		  var comment = self._comments[self.p];
 		  if(comment.timestamp < audio.currentTime * 1000 ){
-			  if(self.speaker){
-				  self.speaker.speak(comment.body);
+			  for(var i=0; i<self.speakers.length; i++){
+				  self.speakers[i].speak(comment.body);
 			  }
   			  self.p+=1;
 		  }
@@ -250,9 +251,7 @@
 	  },
 	  connect: {
 		  value: function(node){
-			  // if(node instanceof PUA.Speaker){
-				  this.speaker = node;
-			  // }
+				  this.speakers.push(node);
 		  }
 	  },
       defaults: {
