@@ -189,15 +189,22 @@
           layout.eachEdge(function(e, sId, dId, v){
             var s = layout.node(sId),
                 d = layout.node(dId),
-                p = new BezierPath();
-            p.moveTo(s.x, s.y);
-            for ( var i = 0, l = v.points.length; i < l; i++ ) {
+                p = new BezierPath(),
+                points = v.points;
+            if(points.length === 0)
+              return;
+            var p0 = geometry.intersectRect(s, points[0]),
+                pN = geometry.intersectRect(d, points[points.length-1]);
+
+
+            p.moveTo(p0.x, p0.y);
+            for ( var i = 0, l = points.length; i < l; i++ ) {
               var point = v.points[i],
                   x = point.x,
                   y = point.y;
               p.lineTo(x, y);
             }
-            p.lineTo(d.x, d.y);
+            p.lineTo(pN.x, pN.y);
             v.path = p;
           });
           this._layout = layout;
