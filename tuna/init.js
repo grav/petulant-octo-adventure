@@ -62,7 +62,7 @@ function disconnect(n){
 	var output = 0;
 	console.log("disconnected output " + output + " of " + getName(n));
 	n.disconnect(output);
-	// TODO: only supports one outgoing edge
+
 	if(n._edgeIds!==undefined){
 		for(var i=0;i<n._edgeIds.length;i++){
 			g.delEdge(n._edgeIds[i]);
