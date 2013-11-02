@@ -20,10 +20,7 @@ tuna.defaultVisual = pet.Waveform;
 tuna.eventHandler = function(event) { g.swallow(event) };
 pet.eventHandler = function(event) { g.swallow(event) };
 
-g.make('soundCloud', new pet.SoundCloud('https://soundcloud.com/madonna/mdna-preview-beautiful-killer'));
-
-// g.speaker.connect(context.destination);
-// g.soundCloud.commentsEmitter.connect(g.speaker);
+g.make('speech', new pet.Speaker());
 
 g.make('phaser', new tuna.Phaser({
                  rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
@@ -34,16 +31,11 @@ g.make('phaser', new tuna.Phaser({
                  bypass: 0
              }));
 
-// g.sc.connect(g.chorus);
-// g.chorus.connect(context.destination);
-
-//g.e.play()
-//g.e.pause()
 
 g.start()
 
 function setup(){
-	g.make('speech', new pet.Speaker());
+	g.make('soundCloud', new pet.SoundCloud('https://soundcloud.com/madonna/mdna-preview-beautiful-killer'));
 	g.soundCloud.connect(g.phaser);
 	g.soundCloud.commentsEmitter.connect(g.speech);
 	g.speech.connect(g.OUT);
