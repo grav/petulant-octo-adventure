@@ -9,11 +9,24 @@
       context = window.AudioContext && (new window.AudioContext());
     }
     userContext = context;
-	userInstance = this;
+  	userInstance = this;
+    this.defaultVisual = this.Waveform;
   },
       version = "0.1",
         noop = function() {},
       Super = Object.create(null, {
+          visual: {
+            get: function() {
+              if(!this._visual && userInstance.defaultVisual)
+                this._visual = new userInstance.defaultVisual;
+              return this._visual;
+            },
+            set: function(value) {
+              if(this._visual && this._visual.connected)
+                throw "Visual already initialized and connected";
+              this._visual = value;
+            }
+          },
         eventHandler: {
           get: function () {
             return userInstance.eventHandler || this._eventHandler || noop;
@@ -119,7 +132,6 @@
     if(!properties) {
       properties = this.getDefaults();
     }
-    this.visual = new userInstance.Waveform();
     this.input = userContext.createAnalyser();
     this.audio = new Audio();
     this.src = url || properties.src || this.defaults.src.value;

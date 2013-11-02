@@ -13,14 +13,14 @@ g.marginY = 30;
 g.make('OUT', context.destination);
 
 var pet = new PUA(context);
-var tuna = new Tuna(context, pet);
+var tuna = new Tuna(context);
+tuna.defaultVisual = pet.Waveform;
 tuna.eventHandler = function(event) { g.swallow(event) };
 pet.eventHandler = function(event) { g.swallow(event) };
 
 g.make('soundCloud', new pet.SoundCloud('https://soundcloud.com/lordemusic/royals'));
 
 g.make('speech', new pet.Speaker(meSpeak));
-g.speech.visual = new pet.Waveform();
 // g.speaker.connect(context.destination);
 // g.soundCloud.commentsEmitter.connect(g.speaker);
 
