@@ -150,12 +150,23 @@
     }
   });
   
+  /* 
+  SoundCloud
+  */
+  
+  
   PUA.prototype.SoundCloud = function(url){
 	  PUA.prototype.ExternalSound.call(this);
 	  this.track_url = url;
+	  
   };
   
+  var client_id = '&client_id=a2f0745a136883f33e1b299b90381703';
+  
   PUA.prototype.SoundCloud.prototype = Object.create(PUA.prototype.ExternalSound.prototype, {
+      name: {
+        value: "SoundCloud"
+      },
 	  track_url: {
 		  enumarable: true,
 		  get: function(){
@@ -166,10 +177,16 @@
 			  this._track_url = value;
 			  console.log('Setting track url to ',value);
 			  this.ready = false;
-			  $.get('http://api.soundcloud.com/resolve.json?url='+value+'&client_id=a2f0745a136883f33e1b299b90381703', function (result) {
+			  $.get('http://api.soundcloud.com/resolve.json?url='+value+client_id, function (result) {
 			    console.log('Result', result);
-			    self.audio.src = result.stream_url+'?client_id=a2f0745a136883f33e1b299b90381703';
+			    self.audio.src = result.stream_url+client_id;
 				self.audio.load();
+				$.get(result.uri+'/comments.json?true'+client_id, function(comments){
+					comments.sort(function(a,b){			
+						return a["timestamp"] - b["timestamp"];
+					});
+					self.comments = comments;
+				});
 			  });
 		  }
 	  }
