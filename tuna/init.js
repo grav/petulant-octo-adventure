@@ -71,7 +71,7 @@ function disconnect(n){
 	renderGraph();
 }
 
-function trigger(n,speaker,comments,p){
+function trigger(n,comments,p){
 	if(p==0){
 		n.start(0);		
 	}
@@ -84,8 +84,8 @@ function trigger(n,speaker,comments,p){
 	console.log("saying '" +text + "' in "+ time + " ms");
 	window.setTimeout(function(){
 		document.getElementById("comment").innerHTML = text;
-		speaker.speak(text);
-		trigger(n,speaker,comments,p+1);
+		meSpeak.speak(text);
+		trigger(n,comments,p+1);
 	},time);
 }
 
