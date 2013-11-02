@@ -4,7 +4,7 @@
     this.lastId = 1;
     this._ctx = ctx;
   }
-  Graph.prototype = Object.create(null, {
+  Graph.prototype = Object.create({}, {
     nextId: {
       value: function(){
         return this.lastId++;
