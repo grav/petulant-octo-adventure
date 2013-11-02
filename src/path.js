@@ -263,7 +263,7 @@ var Geometry = Class.extend({
         },
 
         copy: function() {
-            return new Bounds(this.x, this.y, this.width, this.height);
+            return new geometry.Bounds(this.x, this.y, this.width, this.height);
         },
 
         intersects: function(b) {
@@ -282,7 +282,7 @@ var Geometry = Class.extend({
             }
             var mx = Math.max(this.x, b.x);
             var my = Math.max(this.y, b.y);
-            return new Bounds(mx, my,
+            return new geometry.Bounds(mx, my,
                 Math.min(this.x + this.width, b.x+b.width) - mx,
                 Math.min(this.y + this.height, b.y+b.height) - my
             );
@@ -293,7 +293,7 @@ var Geometry = Class.extend({
              */
             var mx = Math.min(this.x, b.x);
             var my = Math.min(this.y, b.y);
-            return new Bounds(mx, my,
+            return new geometry.Bounds(mx, my,
                 Math.max(this.x + this.width, b.x+b.width) - mx,
                 Math.max(this.y + this.height, b.y+b.height) - my
             );

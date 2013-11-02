@@ -185,7 +185,17 @@
             l = l.edgeSep(self.edgeSep);
           if(self.rankSep)
             l = l.rankSep(self.rankSep);
-          var layout = l.rankDir(self.rankDir).run(copy);
+          var layout = l.rankDir(self.rankDir).run(copy),
+              bounds;
+          layout.eachNode(function(u, v){
+            var b = new geometry.Bounds(v.x-v.width/2, v.y-v.height/2, v.width, v.height);
+            if(!bounds)
+              bounds = b;
+            else
+              bounds = bounds.union(b);
+          });
+          console.log(bounds);
+          layout.bounds = bounds;
           layout.eachEdge(function(e, sId, dId, v){
             var s = layout.node(sId),
                 d = layout.node(dId),
@@ -218,15 +228,17 @@
             g = this.g,
             layout = this.layout,
             fontSize = this.fontSize,
-            visualHeight = this.visualHeight;
+            visualHeight = this.visualHeight,
+            t = ctx.canvas.width/2-layout.bounds.width/2;
+        ctx.translate(t, 0);
         ctx.textAlign = 'center';
         ctx.font = this.font;
         layout.eachNode(function(u, v) {
           ctx.strokeRect(v.x-v.width/2, v.y-v.height/2, v.width, v.height);
           ctx.fillText(g.node(u).label, v.x, v.y+fontSize/2.6 );
         });
-		var oldStroke = ctx.strokeStyle;
-		ctx.strokeStyle="#0033DD";
+        var oldStroke = ctx.strokeStyle;
+        ctx.strokeStyle="#0033DD";
         layout.eachEdge(function(e, sId, dId, v){
           var s = g.node(sId),
               visual = s.value.visual;
@@ -236,7 +248,8 @@
             v.path.draw(ctx);
           }
         })
-		ctx.strokeStyle=oldStroke;
+        ctx.strokeStyle=oldStroke;
+        ctx.translate(-t, 0);
       }
     },
     make: {
