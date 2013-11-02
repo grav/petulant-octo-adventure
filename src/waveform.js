@@ -207,7 +207,6 @@
 	  audio.addEventListener('timeupdate', function(){
 		  var comment = self._comments[self.p];
 		  if(comment.timestamp < audio.currentTime * 1000 ){
-  			  console.log(comment.body);
 			  if(self.speaker){
 				  self.speaker.speak(comment.body);			  	
 			  }
