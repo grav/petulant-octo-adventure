@@ -130,7 +130,7 @@
     stop: {
       enumerable: true,
       value: function() {
-        clearTimeout(self._timer);
+        clearTimeout(this._timer);
       }
     },
     swallow: {
@@ -185,19 +185,36 @@
             l = l.edgeSep(self.edgeSep);
           if(self.rankSep)
             l = l.rankSep(self.rankSep);
-          var layout = l.rankDir(self.rankDir).run(copy);
+          var layout = l.rankDir(self.rankDir).run(copy),
+              bounds;
+          layout.eachNode(function(u, v){
+            var b = new geometry.Bounds(v.x-v.width/2, v.y-v.height/2, v.width, v.height);
+            if(!bounds)
+              bounds = b;
+            else
+              bounds = bounds.union(b);
+          });
+          console.log(bounds);
+          layout.bounds = bounds;
           layout.eachEdge(function(e, sId, dId, v){
             var s = layout.node(sId),
                 d = layout.node(dId),
-                p = new BezierPath();
-            p.moveTo(s.x, s.y);
-            for ( var i = 0, l = v.points.length; i < l; i++ ) {
+                p = new BezierPath(),
+                points = v.points;
+            if(points.length === 0)
+              return;
+            var p0 = geometry.intersectRect(s, points[0]),
+                pN = geometry.intersectRect(d, points[points.length-1]);
+
+
+            p.moveTo(p0.x, p0.y);
+            for ( var i = 0, l = points.length; i < l; i++ ) {
               var point = v.points[i],
                   x = point.x,
                   y = point.y;
               p.lineTo(x, y);
             }
-            p.lineTo(d.x, d.y);
+            p.lineTo(pN.x, pN.y);
             v.path = p;
           });
           this._layout = layout;
@@ -210,15 +227,18 @@
         var ctx = this._ctx,
             g = this.g,
             layout = this.layout,
-            visualHeight = this.visualHeight;
+            fontSize = this.fontSize,
+            visualHeight = this.visualHeight,
+            t = ctx.canvas.width/2-layout.bounds.width/2;
+        ctx.translate(t, 0);
         ctx.textAlign = 'center';
         ctx.font = this.font;
         layout.eachNode(function(u, v) {
           ctx.strokeRect(v.x-v.width/2, v.y-v.height/2, v.width, v.height);
-          ctx.fillText(g.node(u).label, v.x, v.y);
+          ctx.fillText(g.node(u).label, v.x, v.y+fontSize/2.6 );
         });
-		var oldStroke = ctx.strokeStyle;
-		ctx.strokeStyle="#0033DD";
+        var oldStroke = ctx.strokeStyle;
+        ctx.strokeStyle="#0033DD";
         layout.eachEdge(function(e, sId, dId, v){
           var s = g.node(sId),
               visual = s.value.visual;
@@ -228,7 +248,8 @@
             v.path.draw(ctx);
           }
         })
-		ctx.strokeStyle=oldStroke;
+        ctx.strokeStyle=oldStroke;
+        ctx.translate(-t, 0);
       }
     },
     make: {

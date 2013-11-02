@@ -9,11 +9,24 @@
       context = window.AudioContext && (new window.AudioContext());
     }
     userContext = context;
-	userInstance = this;
+  	userInstance = this;
+    this.defaultVisual = this.Waveform;
   },
       version = "0.1",
         noop = function() {},
       Super = Object.create(null, {
+          visual: {
+            get: function() {
+              if(!this._visual && userInstance.defaultVisual)
+                this._visual = new userInstance.defaultVisual;
+              return this._visual;
+            },
+            set: function(value) {
+              if(this._visual && this._visual.connected)
+                throw "Visual already initialized and connected";
+              this._visual = value;
+            }
+          },
         eventHandler: {
           get: function () {
             return userInstance.eventHandler || this._eventHandler || noop;
@@ -119,7 +132,6 @@
     if(!properties) {
       properties = this.getDefaults();
     }
-    this.visual = new userInstance.Waveform();
     this.input = userContext.createAnalyser();
     this.audio = new Audio();
     this.src = url || properties.src || this.defaults.src.value;
@@ -174,7 +186,7 @@
   Speaker (meSpeak wrapper)
   */
 
-  PUA.prototype.Speaker = function(meSpeak){
+  PUA.prototype.Speaker = function(){
 	// Super.call(this);
 	this.meSpeak = meSpeak;
 	meSpeak.loadConfig("tuna/mespeak_config.json");
@@ -193,11 +205,12 @@
 			  if(!this.isSpeaking){
 				  this.isSpeaking = true;
 				  // remove excessive exclamation points
-				  var text = text.replace(/!!+/g,"!")
+				  text = text.replace(/!!+/g,"!")
 				  this.meSpeak.speak(text)
+				  document.getElementById("comment").innerHTML=text;
 				  // throttle speech
 				  var self = this;
-				  setTimeout(function(){self.isSpeaking=false;},3000);			  	
+				  setTimeout(function(){self.isSpeaking=false;},3000);
 			  }
 	  	}
 	}
@@ -211,12 +224,13 @@
   // todo - maybe move out of module?
   CommentsEmitter = function(audio){
 	  this.p = 0;
+	  this.speakers = [];
 	  var self = this;
 	  audio.addEventListener('timeupdate', function(){
 		  var comment = self._comments[self.p];
 		  if(comment.timestamp < audio.currentTime * 1000 ){
-			  if(self.speaker){
-				  self.speaker.speak(comment.body);
+			  for(var i=0; i<self.speakers.length; i++){
+				  self.speakers[i].speak(comment.body);
 			  }
                   var img = document.getElementById("userpic");
           img.src = comment.user.avatar_url;
@@ -242,9 +256,7 @@
 	  },
 	  connect: {
 		  value: function(node){
-			  // if(node instanceof PUA.Speaker){
-				  this.speaker = node;
-			  // }
+				  this.speakers.push(node);
 		  }
 	  },
       defaults: {

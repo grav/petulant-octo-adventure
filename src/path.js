@@ -70,6 +70,39 @@ var Point = Class.extend({
 
 var Geometry = Class.extend({
 
+  intersectRect: function(rect, point) {
+    var x = rect.x;
+    var y = rect.y;
+
+    // For now we only support rectangles
+
+    // Rectangle intersection algorithm from:
+    // http://math.stackexchange.com/questions/108113/find-edge-between-two-boxes
+    var dx = point.x - x;
+    var dy = point.y - y;
+    var w = rect.width / 2;
+    var h = rect.height / 2;
+
+    var sx, sy;
+    if (Math.abs(dy) * w > Math.abs(dx) * h) {
+      // Intersection is top or bottom of rect.
+      if (dy < 0) {
+        h = -h;
+      }
+      sx = dy === 0 ? 0 : h * dx / dy;
+      sy = h;
+    } else {
+      // Intersection is left or right of rect.
+      if (dx < 0) {
+        w = -w;
+      }
+      sx = w;
+      sy = dx === 0 ? 0 : w * dy / dx;
+    }
+
+    return {x: x + sx, y: y + sy};
+  },
+
     // ROTATION:
 
     angle: function(x0, y0, x1, y1) {
@@ -230,7 +263,7 @@ var Geometry = Class.extend({
         },
 
         copy: function() {
-            return new Bounds(this.x, this.y, this.width, this.height);
+            return new geometry.Bounds(this.x, this.y, this.width, this.height);
         },
 
         intersects: function(b) {
@@ -249,7 +282,7 @@ var Geometry = Class.extend({
             }
             var mx = Math.max(this.x, b.x);
             var my = Math.max(this.y, b.y);
-            return new Bounds(mx, my,
+            return new geometry.Bounds(mx, my,
                 Math.min(this.x + this.width, b.x+b.width) - mx,
                 Math.min(this.y + this.height, b.y+b.height) - my
             );
@@ -260,7 +293,7 @@ var Geometry = Class.extend({
              */
             var mx = Math.min(this.x, b.x);
             var my = Math.min(this.y, b.y);
-            return new Bounds(mx, my,
+            return new geometry.Bounds(mx, my,
                 Math.max(this.x + this.width, b.x+b.width) - mx,
                 Math.max(this.y + this.height, b.y+b.height) - my
             );
