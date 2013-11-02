@@ -2,6 +2,34 @@
 <head>
 <script src='tuna.js'></script>
 <script src='init.js'></script>
-<body>
+<script src="d3.v3.min.js"></script>
+<script src="dagre-d3.min.js"></script>
+<style>
+rect {
+    fill: #fff;
+}
+
+.node rect {
+    stroke-width: 1.5px;
+    stroke: #333;
+    fill: none;
+}
+
+.edge rect {
+    fill: #fff;
+}
+
+.edge path {
+    fill: none;
+    stroke: #333;
+    stroke-width: 1.5px;
+}
+</style>
+
+</head>
+<body onload='init()'>
+<svg width=650 height=680>
+    <g id='graph-root' transform="translate(20,20)"/>
+</svg>
 </body>
 </html>
