@@ -201,7 +201,7 @@
             else
               bounds = bounds.union(b);
           });
-          console.log(bounds);
+          // console.log(bounds);
           layout.bounds = bounds;
           layout.eachEdge(function(e, sId, dId, v){
             var s = layout.node(sId),

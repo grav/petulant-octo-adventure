@@ -230,7 +230,7 @@
 	  var self = this;
 	  audio.addEventListener('timeupdate', function(){
 		  var comment = self._comments[self.p];
-		  if(comment.timestamp !== undefined && comment.timestamp < audio.currentTime * 1000 ){
+		  if(comment.timestamp < audio.currentTime * 1000 ){
 			  if(!self.throttle){
 				  self.throttle = true;
 				  for(var i=0; i<self.speakers.length; i++){
@@ -239,13 +239,12 @@
 
                 var img = document.getElementById("userpic");
           		  img.src = comment.user.avatar_url;
-
-
 				  // throttle speech
 				  // var self = this;
 				  setTimeout(function(){self.throttle=false;},3000);
 			  }
   			  self.p+=1;
+			  if(self.p>=self._comments.length) self.p = 0;	
 
 		  }
 	  });
