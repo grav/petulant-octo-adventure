@@ -41,8 +41,10 @@ function renderGraph(){
 function connect(n,m){
 	if(m.input!==undefined){
 		n.connect(m.input);
-	} else if(m.destination!==undefined){
-		n.connect(m.destination)
+	// } else if(m.destination!==undefined){
+	// 	n.connect(m.destination)
+	} else {
+		n.connect(m);
 	}
 	console.log("connected " + getName(n) + " to " + getName(m));
 	safeAdd(g,n);
