@@ -35,6 +35,12 @@
             this._eventHandler = value;
           }
         },
+        reconnect: {
+          value: function(target) {
+            this.disconnect();
+            this.connect(target);
+          }
+        },
         connect: {
           value: function (target) {
             var input = target;
