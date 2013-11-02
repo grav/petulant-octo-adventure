@@ -49,7 +49,7 @@ function connect(n,m){
 	console.log("connected " + getName(n) + " to " + getName(m));
 	safeAdd(g,n);
 	safeAdd(g,m);
-	// TODO: only supports one outgoing edge
+
 	if(n._edgeIds===undefined){
 		n._edgeIds = [];
 	}
