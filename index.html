@@ -55,12 +55,54 @@
         -webkit-transform: rotateX(999deg) rotateY(50deg);
 }  
 }
+h1{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+font-size:30px;
+color:#fff
+
+-webkit-transition: all 2s ease-in;
+text-shadow: 0 1px 0 #ccc,
+             0 2px 0 #c9c9c9,
+             0 3px 0 #bbb,
+             0 4px 0 #b9b9b9,
+             0 5px 0 #aaa,
+             0 6px 1px rgba(0,0,0,.1),
+             0 0 5px rgba(0,0,0,.1),
+             0 1px 3px rgba(0,0,0,.3),
+             0 3px 5px rgba(0,0,0,.2),
+             0 5px 10px rgba(0,0,0,.25),
+             0 10px 10px rgba(0,0,0,.2),
+             0 20px 20px rgba(0,0,0,.15);
+
+
+}
+
+@-webkit-keyframes usercomment{
+0%{
+    -webkit-transform:scale(1,2) rotate(360deg);
+}
+70%{
+    -webkit-transform:scale(2,4) rotate(-100deg);
+}
+100%{
+    -webkit-transform:scale(4,4) rotate(-1000deg);
+}
+}
+#usercomment{
+    -webkit-animation:usercomment 10s infinite;
+
+}
+
+
         </style>
     </head>
 <body style="height:100%">
+<h1 id="usercomment" style="position:absolute"></h1>
 <img src="http://oresundstartups.com/wp-content/uploads/2013/10/mmhw.png" class="move" id="userpic"  style="position:absolute; opacity: 0.6;"/>
     <canvas id="waveform" style="height:100%;width:100%"></canvas>
     <script src="demo.js"></script>
-	<div id="comment"></div>
+	<div id="usercomment">asdfasdf asdf asdf</div>
 </body>
 </html>
