@@ -155,6 +155,31 @@
   */
   
   
+  CommentsEmitter = function(comments,audio){
+	  comments.sort(function(a,b){			
+		return a["timestamp"] - b["timestamp"];
+	  });
+	  this.comments = comments;
+	  this.p = 0;
+	  var self = this;
+	  audio.addEventListener('timeupdate', function(){
+		  var comment = self.comments[self.p];
+		  if(comment.timestamp < audio.currentTime * 1000 ){
+  			  console.log(comment.body);
+  			  self.p+=1;
+		  }
+	  });
+  };
+  
+  CommentsEmitter.prototype = Object.create(Super, {
+      name: {
+        value: "CommentsEmitter"
+      },
+      defaults: {	
+  }});
+  
+  
+  
   PUA.prototype.SoundCloud = function(url){
 	  PUA.prototype.ExternalSound.call(this);
 	  this.track_url = url;
@@ -182,10 +207,7 @@
 			    self.audio.src = result.stream_url+"?true&"+client_id;
 				self.audio.load();
 				$.get(result.uri+'/comments.json?true'+client_id, function(comments){
-					comments.sort(function(a,b){			
-						return a["timestamp"] - b["timestamp"];
-					});
-					self.comments = comments;
+					self.comments = new CommentsEmitter(comments,self.audio);
 				});
 			  });
 		  }
