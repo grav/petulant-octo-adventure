@@ -140,9 +140,10 @@
           nodeId = event.self._nodeId;
         if(nodeId && g.hasNode(nodeId)) {
           if(event.type === "connected") {
-            var target = event.target._nodeId;
+            var target = event.target._nodeId,
+                visual = typeof(event.visual) == "undefined" ? true : event.visual;
             if(target && g.hasNode(target)) {
-              g.addEdge(null, nodeId, target);
+              g.addEdge(null, nodeId, target, {visual:visual});
               self._layout = null;
             }
           } else if(event.type === "disconnected") {
@@ -241,8 +242,9 @@
         ctx.strokeStyle="#0033DD";
         layout.eachEdge(function(e, sId, dId, v){
           var s = g.node(sId),
+              ed = g.edge(e),
               visual = s.value.visual;
-          if(visual){
+          if(visual && ed.visual){
             visual.draw(ctx, v.path, visualHeight);
           } else {
             v.path.draw(ctx);
