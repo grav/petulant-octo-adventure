@@ -210,7 +210,7 @@
 				  document.getElementById("comment").innerHTML=text;
 				  // throttle speech
 				  var self = this;
-				  setTimeout(function(){self.isSpeaking=false;},3000);			  	
+				  setTimeout(function(){self.isSpeaking=false;},3000);
 			  }
 	  	}
 	}
