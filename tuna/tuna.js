@@ -28,6 +28,7 @@
             userContext = context;
             userInstance = this;
         },
+        noop = function() {},
         version = "0.1",
         set = "setValueAtTime",
         linear = "linearRampToValueAtTime",
@@ -35,18 +36,27 @@
             param.value = val;
         },
         Super = Object.create(null, {
+          callback: {
+                get: function () {
+                    return userInstance.callback || this._callback || noop;
+                },
+                set: function (value) {
+                  this._callback = value;
+                }
+          },
             activate: {
                 writable: true,
                 value: function (doActivate) {
                     if(doActivate) {
+                        this.callback({type:'activating', self:this});
                         this.input.disconnect();
                         this.input.connect(this.activateNode);
-                        if(this.activateCallback) {
-                            this.activateCallback(doActivate);
-                        }
+                        this.callback({type:'activated', self:this});
                     } else {
+                        this.callback({type:'deactivating', self:this});
                         this.input.disconnect();
                         this.input.connect(this.output);
+                        this.callback({type:'deactivated', self:this});
                     }
                 }
             },
@@ -65,12 +75,19 @@
             },
             connect: {
                 value: function (target) {
-                    this.output.connect(target);
+                  var input = target;
+                  if(typeof(target.input) !== "undefined")
+                    input = target.input;
+                  this.callback({type:'connecting', self:this, target:target});
+                  this.output.connect(input);
+                  this.callback({type:'connected', self:this, target:target});
                 }
             },
             disconnect: {
                 value: function (target) {
-                    this.output.disconnect(target);
+                  this.callback({type:'disconnecting', self:this, target:target});
+                  this.output.disconnect(target);
+                  this.callback({type:'disconnected', self:this, target:target});
                 }
             },
             connectInOrder: {

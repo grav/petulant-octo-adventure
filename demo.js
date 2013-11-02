@@ -1,38 +1,42 @@
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var context = new AudioContext();
 
+var canvasEl = document.getElementById('waveform');
+canvasEl.width = $(canvasEl).width();
+canvasEl.height = $(canvasEl).height();
+var ctx      = canvasEl.getContext( '2d' );
+
+var g = new Graph(ctx);
+g.make('OUT', context.destination);
+
 var tuna = new Tuna(context);
+tuna.callback = function(event) { g.swallow(event) };
 var pet = new PUA(context);
+pet.callback = function(event) { g.swallow(event) };
 
 var track_url = 'https://soundcloud.com/lordemusic/royals';
 
-var e = new pet.ExternalSound();
+g.make('e', new pet.ExternalSound());
 
 $.get('http://api.soundcloud.com/resolve.json?url='+track_url+'&client_id=a2f0745a136883f33e1b299b90381703', function (result) {
   console.log('Result', result);
-  e.src = result.stream_url+'?client_id=a2f0745a136883f33e1b299b90381703';
+  g.e.src = result.stream_url+'?client_id=a2f0745a136883f33e1b299b90381703';
 });
 
-var chorus = new tuna.Chorus({
+g.make('chorus', new tuna.Chorus({
                  rate: 10.5,
                  feedback: 0.2,
                  delay: 0.0045,
                  bypass: 0
-             });
+             }));
 
-e.connect(chorus.input);
-chorus.connect(context.destination);
-
-var wave = new pet.Waveform();
-var canvasEl = document.getElementById('waveform');
-chorus.connect(wave.input)
-//var inID = setInterval(function(){
-//  wave.draw(canvasEl);
-//}, 1000/20);
+g.e.connect(g.chorus);
+g.e.connect(context.destination);
 
 //e.play()
 //e.pause()
 
+/*
 var g = new dagre.Digraph();
 var muh = { label: "Kevin Passy",  width: 144, height: 100 };
 g.addNode("muh", muh);
@@ -89,4 +93,5 @@ function draw() {
   });
 }
 
-var inID = setInterval(draw, 1000/20);
+//var inID = setInterval(draw, 1000/10);
+*/

@@ -12,17 +12,35 @@
     userInstance = this;
   },
       version = "0.1",
+        noop = function() {},
       Super = Object.create(null, {
+        callback: {
+          get: function () {
+            return userInstance.callback || this._callback || noop;
+          },
+          set: function (value) {
+            this._callback = value;
+          }
+        },
         connect: {
-          writable:true,
           value: function (target) {
-            this.output.connect(target);
+            var input = target;
+            if(typeof(target.input) !== "undefined")
+              input = target.input;
+            this.callback({type:'connecting', self:this, target:target});
+            this.output.connect(input);
+            this.callback({type:'connected', self:this, target:target});
+            if(this.visual && !this.visual.connected)
+              this.output.connect(this.visual.input);
           }
         },
         disconnect: {
-          writable:true,
           value: function (target) {
+            this.callback({type:'disconnecting', self:this, target:target});
             this.output.disconnect(target);
+            this.callback({type:'disconnected', self:this, target:target});
+            if(this.visual)
+              this.visual.connected = false;
           }
         },
         getDefaults: {
@@ -59,7 +77,8 @@
           max: 2048,
           type: INT
         },
-        ready: true
+        ready: true,
+        connected: false
       }
     },
     size: {
@@ -72,12 +91,12 @@
       }
     },
     draw: {
-      value: function(canvas, path, h) {
-        var ctx      = canvas.getContext( '2d' ),
-            w        = path.length(),
+      value: function(ctx, path, h) {
+        var w        = path.length(),
             size     = this.size,
             wavedata = new Uint8Array(size);
 
+        if(!h) h=100;
         this.input.getByteTimeDomainData(wavedata);
         ctx.beginPath();
         for ( var i = 0, l = wavedata.length; i < l; i++ ) {
@@ -100,6 +119,7 @@
     if(!properties) {
       properties = this.getDefaults();
     }
+    this.visual = new userInstance.Waveform();
     this.input = userContext.createAnalyser();
     this.audio = new Audio();
     console.log(url, properties, this.defaults);
