@@ -218,7 +218,11 @@
 			  if(self.speaker){
 				  self.speaker.speak(comment.body);
 			  }
+                  var img = document.getElementById("userpic");
+          img.src = comment.user.avatar_url;
+          console.log(img); 
   			  self.p+=1;
+
 		  }
 	  });
   };

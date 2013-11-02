@@ -9,9 +9,59 @@
         <script src="src/path.js"></script>
         <script src="src/waveform.js"></script>
         <script src="src/graph.js"></script>
+
+        <style>
+    .move {
+    -webkit-animation: move 2s infinite alternate;
+    }
+
+    .move2{-webkit-animation: move2 9s infinite alternate;}
+
+@-webkit-keyframes move {
+0%{left:100%;
+    top:-10%;
+    }
+20%{
+    -webkit-transform: rotate(20deg), ;   
+}   
+30%{
+        -webkit-transform: rotate(5deg);
+}
+40%{
+    left:50%;
+    -webkit-transform: rotate(-30deg);
+    }
+100%{
+    -webkit-transform: rotate(-300deg);
+    left:-15%;
+    top:40%;
+    }
+}
+
+@-webkit-keyframes move2{
+0%{
+    left:100%;
+    top:80%;
+    -webkit-transform: rotateX(10deg);
+}
+
+50%{
+    -webkit-transform: rotateX(500deg) rotateY(120deg);
+}
+
+60%{
+    top:20%;
+    left:-20%;
+        -webkit-transform: rotateX(999deg) rotateY(50deg);
+}  
+}
+        </style>
     </head>
 <body style="height:100%">
+
+<img src="http://i1.sndcdn.com/avatars-000058104890-4ljkd7-large.jpg?3eddc42" class="move" id="userpic"  style="position:absolute;"/>
     <canvas id="waveform" style="height:100%;width:100%"></canvas>
+
     <script src="demo.js"></script>
 </body>
 </html>
