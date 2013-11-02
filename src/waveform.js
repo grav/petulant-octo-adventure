@@ -220,6 +220,7 @@
 	  this.p = 0;
 	  this.speakers = [];
 	  this.throttle = false;
+	  this.visualize = false;
 	  var self = this;
 	  audio.addEventListener('timeupdate', function(){
 		  var comment = self._comments[self.p];
@@ -231,6 +232,8 @@
 				  }
                   var img = document.getElementById("userpic");
           		  img.src = comment.user.avatar_url;
+				  img.hidden = !this.visualize;
+				  document.getElementById("comment").hidden = !this.visualize;
 
 				  // throttle speech
 				  // var self = this;
