@@ -7,6 +7,8 @@ canvasEl.height = $(canvasEl).height();
 var ctx      = canvasEl.getContext( '2d' );
 
 var g = new Graph(ctx);
+g.nodeSep = 100;
+g.rankSep = 100;
 g.marginX = 30;
 g.marginY = 30;
 
@@ -18,9 +20,8 @@ tuna.defaultVisual = pet.Waveform;
 tuna.eventHandler = function(event) { g.swallow(event) };
 pet.eventHandler = function(event) { g.swallow(event) };
 
-g.make('soundCloud', new pet.SoundCloud('https://soundcloud.com/lordemusic/royals'));
+g.make('soundCloud', new pet.SoundCloud('https://soundcloud.com/madonna/mdna-preview-beautiful-killer'));
 
-g.make('speech', new pet.Speaker(meSpeak));
 // g.speaker.connect(context.destination);
 // g.soundCloud.commentsEmitter.connect(g.speaker);
 
@@ -42,6 +43,7 @@ g.make('phaser', new tuna.Phaser({
 g.start()
 
 function setup(){
+	g.make('speech', new pet.Speaker());
 	g.soundCloud.connect(g.phaser);
 	g.soundCloud.commentsEmitter.connect(g.speech);
 	g.speech.connect(g.OUT);

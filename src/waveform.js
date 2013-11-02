@@ -186,7 +186,7 @@
   Speaker (meSpeak wrapper)
   */
 
-  PUA.prototype.Speaker = function(meSpeak){
+  PUA.prototype.Speaker = function(){
 	// Super.call(this);
 	this.meSpeak = meSpeak;
 	meSpeak.loadConfig("tuna/mespeak_config.json");
@@ -205,8 +205,9 @@
 			  if(!this.isSpeaking){
 				  this.isSpeaking = true;
 				  // remove excessive exclamation points
-				  var text = text.replace(/!!+/g,"!")
+				  text = text.replace(/!!+/g,"!")
 				  this.meSpeak.speak(text)
+				  document.getElementById("comment").innerHTML=text;
 				  // throttle speech
 				  var self = this;
 				  setTimeout(function(){self.isSpeaking=false;},3000);			  	
