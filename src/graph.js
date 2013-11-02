@@ -153,7 +153,8 @@
             }
           } else if(event.type === "disconnected") {
             var out = g.outEdges(nodeId);
-            console.log(out);
+            for(var i=0, l=out.length;i<l;i++)
+              g.delEdge(out[i]);
             self._layout = null;
           }
         }
