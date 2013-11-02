@@ -72,7 +72,7 @@
       writable:true,
       value: {
         size: {
-          value: 1024,
+          value: 256,
           min: 32,
           max: 2048,
           type: INT
