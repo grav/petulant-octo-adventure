@@ -148,7 +148,7 @@
             }
           } else if(event.type === "disconnected") {
             var out = g.outEdges(nodeId);
-            console.log(out);
+            // console.log(out);
             self._layout = null;
           }
         }
@@ -195,7 +195,7 @@
             else
               bounds = bounds.union(b);
           });
-          console.log(bounds);
+          // console.log(bounds);
           layout.bounds = bounds;
           layout.eachEdge(function(e, sId, dId, v){
             var s = layout.node(sId),
