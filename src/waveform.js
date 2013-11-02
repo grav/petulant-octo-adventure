@@ -181,6 +181,7 @@
 	meSpeak.loadVoice('tuna/voices/en/en-us.json');
 	meSpeak.setAudioContext(userContext);
 	this.output = meSpeak.getMasterGain();
+	this.isSpeaking = false;
   };
   
   PUA.prototype.Speaker.prototype = Object.create(Super, {
@@ -189,7 +190,15 @@
       },
 	  speak: {
 		  value: function(text){
-			  this.meSpeak.speak(text)
+			  if(!this.isSpeaking){
+				  this.isSpeaking = true;
+				  // remove excessive exclamation points
+				  var text = text.replace(/!!+/g,"!")
+				  this.meSpeak.speak(text)
+				  // throttle speech
+				  var self = this;
+				  setTimeout(function(){self.isSpeaking=false;},3000);			  	
+			  }
 	  	}
 	}
   	
