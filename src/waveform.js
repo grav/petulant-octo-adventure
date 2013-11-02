@@ -14,19 +14,26 @@
       version = "0.1",
       Super = Object.create(null, {
         connect: {
+          writable:true,
           value: function (target) {
             this.output.connect(target);
           }
         },
-            getDefaults: {
-                value: function () {
-                    var result = {};
-                    for(var key in this.defaults) {
-                        result[key] = this.defaults[key].value;
-                    }
-                    return result;
-                }
-            },
+        disconnect: {
+          writable:true,
+          value: function (target) {
+            this.output.disconnect(target);
+          }
+        },
+        getDefaults: {
+          value: function () {
+            var result = {};
+            for(var key in this.defaults) {
+              result[key] = this.defaults[key].value;
+            }
+            return result;
+          }
+        },
 
       }),
       INT = "int";
@@ -65,27 +72,27 @@
       }
     },
     draw: {
-      value: function(canvas) {
+      value: function(canvas, path, h) {
         var ctx      = canvas.getContext( '2d' ),
-            h        = canvas.height,
-            w        = canvas.width,
+            w        = path.length(),
             size     = this.size,
             wavedata = new Uint8Array(size);
 
         this.input.getByteTimeDomainData(wavedata);
-        ctx.clearRect( 0, 0, w, h );
         ctx.beginPath();
         for ( var i = 0, l = wavedata.length; i < l; i++ ) {
-          var x = i * ( w/l ),
-              y = h * wavedata[i]/256;
+          var x = i/l,
+              y = h * (wavedata[i]-128)/256,
+              p = path.point(x),
+              a = path.angle(x),
+              p2 = geometry.rotate(p.x, p.y+y, p.x, p.y, a);
+          //console.log(y, x, w, l, p.x, p.y+y);
           if(i === 0)
-            ctx.moveTo( x, y);
+            ctx.moveTo( p2.x, p2.y);
           else
-            ctx.lineTo( x, y);
-          //ctx.drawImage(imgEl,x,y);
+            ctx.lineTo( p2.x, p2.y);
         }
         ctx.stroke();
-        ctx.closePath();
       }
     }
   });
