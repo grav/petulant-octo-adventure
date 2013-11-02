@@ -9,7 +9,7 @@
       context = window.AudioContext && (new window.AudioContext());
     }
     userContext = context;
-    userInstance = this;
+	userInstance = this;
   },
       version = "0.1",
         noop = function() {},
@@ -169,7 +169,113 @@
       }
     }
   });
-
+  
+  
+  /*
+  Speaker (meSpeak wrapper)
+  */
+  
+  PUA.prototype.Speaker = function(meSpeak){
+	// Super.call(this);
+	this.meSpeak = meSpeak;
+	meSpeak.loadConfig("tuna/mespeak_config.json");
+	meSpeak.loadVoice('tuna/voices/en/en-us.json');
+	meSpeak.setAudioContext(userContext);
+	this.output = meSpeak.getMasterGain();
+  };
+  
+  PUA.prototype.Speaker.prototype = Object.create(Super, {
+      name: {
+        value: "Speaker"
+      },
+	  speak: {
+		  value: function(text){
+			  this.meSpeak.speak(text)
+	  	}
+	}
+  	
+  });
+  
+  /* 
+  SoundCloud
+  */
+  
+  // todo - maybe move out of module?
+  CommentsEmitter = function(audio){
+	  this.p = 0;
+	  var self = this;
+	  audio.addEventListener('timeupdate', function(){
+		  var comment = self._comments[self.p];
+		  if(comment.timestamp < audio.currentTime * 1000 ){
+  			  console.log(comment.body);
+			  if(self.speaker){
+				  self.speaker.speak(comment.body);			  	
+			  }
+  			  self.p+=1;
+		  }
+	  });
+  };
+  
+  CommentsEmitter.prototype = Object.create(Super, {
+      name: {
+        value: "CommentsEmitter"
+      },
+	  comments: {
+		  set: function(comments){
+			  comments.sort(function(a,b){			
+				return a["timestamp"] - b["timestamp"];
+			  });
+			  console.log("got "+ comments.length + " comments!");
+			  this._comments = comments;
+		  }
+	  },
+	  connect: {
+		  value: function(node){
+			  // if(node instanceof PUA.Speaker){
+				  this.speaker = node;
+			  // }
+		  }
+	  },
+      defaults: {	
+  }});
+  
+  
+  
+  PUA.prototype.SoundCloud = function(url){
+	  PUA.prototype.ExternalSound.call(this);
+	  this.track_url = url;
+	  this.commentsEmitter = new CommentsEmitter(this.audio);
+	  
+  };
+  
+  var client_id = '&client_id=a2f0745a136883f33e1b299b90381703';
+  
+  PUA.prototype.SoundCloud.prototype = Object.create(PUA.prototype.ExternalSound.prototype, {
+      name: {
+        value: "SoundCloud"
+      },
+	  track_url: {
+		  enumarable: true,
+		  get: function(){
+			  return this._track_url
+		  },
+		  set: function(value){
+			  var self = this;
+			  this._track_url = value;
+			  console.log('Setting track url to ',value);
+			  this.ready = false;
+			  $.get('http://api.soundcloud.com/resolve.json?url='+value+client_id, function (result) {
+			    console.log('Result', result);
+			    self.audio.src = result.stream_url+"?true&"+client_id;
+				self.audio.load();
+				$.get(result.uri+'/comments.json?true'+client_id, function(comments){
+					self.commentsEmitter.comments = comments;
+				});
+			  });
+		  }
+	  }
+  });
+  
   PUA.toString = PUA.prototype.toString = function () {
     return "You are running pertulant octo adventure version " + version;
   };
