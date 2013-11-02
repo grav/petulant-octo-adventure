@@ -35,4 +35,4 @@ g.chorus.connect(context.destination);
 //g.e.play()
 //g.e.pause()
 
-//g.start()
+g.start()

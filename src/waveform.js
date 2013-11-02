@@ -122,7 +122,6 @@
     this.visual = new userInstance.Waveform();
     this.input = userContext.createAnalyser();
     this.audio = new Audio();
-    console.log(url, properties, this.defaults);
     this.src = url || properties.src || this.defaults.src.value;
     this.output = userContext.createMediaElementSource(this.audio);
     this.audio.addEventListener('canplay', function(){
@@ -264,7 +263,6 @@
 			  console.log('Setting track url to ',value);
 			  this.ready = false;
 			  $.get('http://api.soundcloud.com/resolve.json?url='+value+client_id, function (result) {
-			    console.log('Result', result);
 			    self.audio.src = result.stream_url+"?true&"+client_id;
 				self.audio.load();
 				$.get(result.uri+'/comments.json?true'+client_id, function(comments){
