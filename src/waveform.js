@@ -179,7 +179,7 @@
 			  this.ready = false;
 			  $.get('http://api.soundcloud.com/resolve.json?url='+value+client_id, function (result) {
 			    console.log('Result', result);
-			    self.audio.src = result.stream_url+client_id;
+			    self.audio.src = result.stream_url+"?true&"+client_id;
 				self.audio.load();
 				$.get(result.uri+'/comments.json?true'+client_id, function(comments){
 					comments.sort(function(a,b){			
