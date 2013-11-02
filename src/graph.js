@@ -143,10 +143,12 @@
             var target = event.target._nodeId;
             if(target && g.hasNode(target)) {
               g.addEdge(null, nodeId, target);
+              self._layout = null;
             }
           } else if(event.type === "disconnected") {
             var out = g.outEdges(nodeId);
             console.log(out);
+            self._layout = null;
           }
         }
       }
