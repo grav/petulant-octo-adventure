@@ -10,12 +10,98 @@
         return this.lastId++;
       }
     },
-    font: {
+    visualHeight: {
+      enumerable: true,
+      writable:true,
+      value:50
+    },
+    marginX: {
+      enumerable: true,
       get: function() {
-        return "" + this.fontSize + "px";
+        return this._marginX || 10;
+      },
+      set: function(value) {
+        this._marginX = value;
+        this._layout = null;
+      }
+    },
+    marginY: {
+      enumerable: true,
+      get: function() {
+        return this._marginY || 10;
+      },
+      set: function(value) {
+        this._marginY = value;
+        this._layout = null;
+      }
+    },
+    font: {
+      enumerable: true,
+      get: function() {
+        return "" + this.fontSize + "px " + this.fontFamily;
+      }
+    },
+    fontFamily: {
+      enumerable: true,
+      get: function() {
+        return this._fontFamily || "sans-serif";
+      },
+      set: function(value) {
+        this._fontFamily = value;
+      }
+    },
+    fontSize: {
+      enumerable: true,
+      get: function() {
+        return this._fontSize || 10;
+      },
+      set: function(value) {
+        this._fontSize = value;
+        this._layout = null;
+      }
+    },
+    nodeSep: {
+      enumerable: true,
+      get: function() {
+        return this._nodeSep;
+      },
+      set: function(value) {
+        this._nodeSep = value;
+        this._layout = null;
+      }
+    },
+    edgeSep: {
+      enumerable: true,
+      get: function() {
+        return this._edgeSep;
+      },
+      set: function(value) {
+        this._edgeSep = value;
+        this._layout = null;
+      }
+    },
+    rankSep: {
+      enumerable: true,
+      get: function() {
+        return this._rankSep;
+      },
+      set: function(value) {
+        this._rankSep = value;
+        this._layout = null;
+      }
+    },
+    rankDir: {
+      enumerable: true,
+      get: function() {
+        return this._rankDir || "TB";
+      },
+      set: function(value) {
+        this._rankDir = value;
+        this._layout = null;
       }
     },
     frameRate: {
+      enumerable: true,
       get: function() {
         return this._frameRate || 20;
       },
@@ -24,12 +110,14 @@
       }
     },
     refresh: {
+      enumerable: true,
       value: function() {
         this.clear();
         this.render();
       }
     },
     start: {
+      enumerable: true,
       value: function() {
         var self = this,
             fun  = function() {
@@ -40,17 +128,9 @@
       }
     },
     stop: {
+      enumerable: true,
       value: function() {
         clearTimeout(self._timer);
-      }
-    },
-    fontSize: {
-      get: function() {
-        return this._fontSize || 10;
-      },
-      set: function(value) {
-        this._fontSize = value;
-        this._layout = null;
       }
     },
     swallow: {
@@ -82,20 +162,28 @@
       get: function() {
         if(!this._layout) {
           var self = this,
-              copy = self.g.copy();
+              copy = self.g.copy(),
+              marginX = self.marginX,
+              marginY = self.marginY
+              fontSize = self.fontSize,
+              height = fontSize + marginY*2;
           ctx.font = self.font;
           copy.eachNode(function(u, value){
             var c = jQuery.extend({}, value),
-                marginX = 10,
-                marginY = 10,
-                width = ctx.measureText(value.label).width + marginX*2,
-                height = self.fontSize + marginY*2;
+                width = ctx.measureText(value.label).width + marginX*2;
 
             c.width = width;
             c.height = height;
             copy.node(u, c);
           });
-          var layout = dagre.layout().run(copy);
+          var l = dagre.layout();
+          if(self.nodeSep)
+            l = l.nodeSep(self.nodeSep);
+          if(self.edgeSep)
+            l = l.edgeSep(self.edgeSep);
+          if(self.rankSep)
+            l = l.rankSep(self.rankSep);
+          var layout = l.rankDir(self.rankDir).run(copy);
           layout.eachEdge(function(e, sId, dId, v){
             var s = layout.node(sId),
                 d = layout.node(dId),
@@ -119,7 +207,8 @@
       value: function(){
         var ctx = this._ctx,
             g = this.g,
-            layout = this.layout;
+            layout = this.layout,
+            visualHeight = this.visualHeight;
         ctx.textAlign = 'center';
         ctx.font = this.font;
         layout.eachNode(function(u, v) {
@@ -130,7 +219,7 @@
           var s = g.node(sId),
               visual = s.value.visual;
           if(visual){
-            visual.draw(ctx, v.path);
+            visual.draw(ctx, v.path, visualHeight);
           } else {
             v.path.draw(ctx);
           }
@@ -138,6 +227,7 @@
       }
     },
     make: {
+      enumerable: true,
       value: function(name, value){
         if(!value._nodeId)
           value._nodeId = this.nextId();
