@@ -38,6 +38,7 @@ function setup(){
 	g.make('soundCloud', new pet.SoundCloud('https://soundcloud.com/madonna/mdna-preview-beautiful-killer'));
 	g.soundCloud.connect(g.phaser);
 	g.soundCloud.commentsEmitter.connect(g.speech);
+	g.speech.output.gain.value=3
 	g.speech.connect(g.OUT);
 	g.phaser.connect(g.OUT);
 }
